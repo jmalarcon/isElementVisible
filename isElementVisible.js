@@ -73,14 +73,16 @@
         function detectPossibleChange() {
             var isVisible = isElementPartiallyVisible(elt);
             if (isVisible != prevVisibility) { //the visibility state of the element has changed
-                if(onlyFirstTime) { //If it's only to be called the first time, remove the events after it
+                prevVisibility = isVisible;
+                var cancelFurtherEvents = false;
+                if (typeof handler == "function")
+                    cancelFurtherEvents = handler(isVisible, elt);
+
+                if(cancelFurtherEvents || onlyFirstTime) { //If it's only to be called the first time or if it's cancelled, remove the events after it
                     window.removeEventListener("load", regulatedDetection);
                     window.removeEventListener("resize", regulatedDetection);
                     window.removeEventListener("scroll", regulatedDetection);
                 }
-                prevVisibility = isVisible;
-                if (typeof handler == "function")
-                    handler(isVisible, elt);
             }
         }
 
@@ -104,13 +106,15 @@
             var isVisible = isElementTotallyVisible(elt);
             if (isVisible != prevVisibility) { //the visibility state of the element has changed
                 prevVisibility = isVisible;
-                if(onlyFirstTime) { //If it's only to be called the first time, remove the events after it
+                var cancelFurtherEvents = false;
+                if (typeof handler == "function")
+                    cancelFurtherEvents =handler(isVisible, elt);
+                
+                if(cancelFurtherEvents || onlyFirstTime) { //If it's only to be called the first time or if it's cancelled, remove the events after it
                     window.removeEventListener("load", regulatedDetection);
                     window.removeEventListener("resize", regulatedDetection);
                     window.removeEventListener("scroll", regulatedDetection);
                 }
-                if (typeof handler == "function")
-                    handler(isVisible, elt);
             }
         }
 

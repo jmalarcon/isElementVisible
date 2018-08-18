@@ -34,6 +34,8 @@
     
     function logVisibility(visible, element){
         console.log("%s element is visible?: %s", element.id, visible);
+        //Uncomment the next line to cancel the detection events if the element is currently visible (and it's visilble therefore for the first time)
+        //return visible;
     }
     
     var myDiv = document.getElementById("myBox");
