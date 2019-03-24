@@ -1,14 +1,34 @@
 // @ts-check
 /**
- * @file This library defines an object with two functions to detect visibility (total or partial) of an element in the viewport, and two functions that simulate two nonexistent events to detect when any element enters or leaves the visible area of the page.
+ * @file This library adds 4 new events to any element in a page: show, hide, showpart and hidepart.
  * @author José Manuel Alarcón - www.JASoft.org - www.campusMVP.es
- * @version 2.0
+ * @version 3.0
  * @license MIT
  */
 
 (function(){
 
 //#region visibility checking functions
+
+    /**
+     * Assigns a handler to the events needed to control de visibility events
+     * @param {EventListenerOrEventListenerObject} listener
+     */
+    function enableDetectionEventsListener(listener) {
+        window.addEventListener("load", listener);
+        window.addEventListener("resize", listener);
+        window.addEventListener("scroll", listener);
+    }
+
+    /**
+     * Removes the handler from the events needed to control de visibility events
+     * @param {EventListenerObject} listener
+     */
+    function disableDetectionEventsListener(listener) {
+        window.removeEventListener("load", listener);
+        window.removeEventListener("resize", listener);
+        window.removeEventListener("scroll", listener);
+    }
 
     /**
      * Determines whether the element passed as a parameter is fully visible in the browser window or not.
@@ -61,9 +81,8 @@
         }
 
         //Bind this internal function with the various events that could cause a change in visibility
-        window.addEventListener("load", detectPossibleChange);
-        window.addEventListener("resize", detectPossibleChange);
-        window.addEventListener("scroll", detectPossibleChange);
+        enableDetectionEventsListener(detectPossibleChange);
+        return detectPossibleChange;    //To keep a reference to the closure for event remove
     }
 
     /**
@@ -84,16 +103,161 @@
         }
 
         //Bind this internal function with the various events that could cause a change in visibility
-        window.addEventListener("load", detectPossibleChange);
-        window.addEventListener("resize", detectPossibleChange);
-        window.addEventListener("scroll", detectPossibleChange);
+        enableDetectionEventsListener(detectPossibleChange);
+        return detectPossibleChange;    //To keep a reference to the closure for event removal
     }
 
 //#endregion
 
 //#region Event listeners subclassification and management
 
-    //I'm going to redefine theoriginal global addEventListener and removeEventListener methods in order to detect the new custom events
+    //List of elements that already have visibility events enabled
+    var showEnabledElements = [];
+    var hideEnabledElements = [];
+    var showpartEnabledElements = [];
+    var hidepartEnabledElements = [];
+
+    //Show
+    /**
+     * Adds show detection to an element. Raises when the element is shown totally (not partially)
+     * @param {EventTarget} elt The element to add show events to
+     */
+    function enableElementShowEvent(elt) {
+        //If element is not already enabled...
+        if (showEnabledElements.indexOf(elt) == -1) {
+            elt.onShowInternalListener = inViewportTotally(elt, raiseShowEvent); //Start detecting full show changes
+        }
+        //Add element to the list of enabled elements (it's in the list several times if there are several listeners)
+        showEnabledElements.push(elt);
+    }
+
+    /**
+     * Removes show detection from an element.
+     * @param {EventTarget} elt
+     */
+    function disableElementShowEvent(elt) {
+        var pos = showEnabledElements.indexOf(elt);
+        //If element is not in the list, means a call to remove before adding a handler first
+        if (pos == -1) return;
+
+        //Remove the element from the list (it can be more than once)
+        showEnabledElements.splice(pos, 1);
+
+        //If the element is not in the list (it is once per event listener added)
+        if (showEnabledElements.indexOf(elt) == -1)
+        {
+            //Remove the window events
+            disableDetectionEventsListener(elt.onShowInternalListener);
+            delete elt.onShowInternalListener;
+        }
+    }
+
+    //Hide
+    /**
+     * Adds hide event detection to an element. Raises when the element is hidden totally (not partially)
+     * @param {EventTarget} elt
+     */
+    function enableElementHideEvent(elt) {
+        //If element is not already enabled...
+        if (hideEnabledElements.indexOf(elt) == -1) {
+            elt.onHideInternalListener = inViewportPartially(elt, raiseHideEvent); //Start detecting full hide changes
+        }
+        //Add element to the list of enabled elements (it's in the list several times if there are several listeners)
+        hideEnabledElements.push(elt);
+    }
+
+    /**
+     * Removes hide detection from an element.
+     * @param {EventTarget} elt
+     */
+    function disableElementHideEvent(elt) {
+        var pos = hideEnabledElements.indexOf(elt);
+        //If element is not in the list, means a call to remove before adding a handler first
+        if (pos == -1) return;
+
+        //Remove the element from the list (it can be more than once)
+        hideEnabledElements.splice(pos, 1);
+
+        //If the element is not in the list (it is once per event listener added)
+        if (hideEnabledElements.indexOf(elt) == -1)
+        {
+            //Remove the window events
+            disableDetectionEventsListener(elt.onHideInternalListener);
+            delete elt.onHideInternalListener;
+        }
+    }
+
+    //Show Partially
+    /**
+     * Adds partial show detection to an element. Raises when the element is shown partially (not totally)
+     * @param {EventTarget} elt
+     */
+    function enableElementShowpartEvent(elt) {
+        //If element is not already enabled...
+        if (showpartEnabledElements.indexOf(elt) == -1) {
+            elt.onShowpartInternalListener = inViewportPartially(elt, raiseShowPartEvent); //Start detecting partial show changes
+        }
+        //Add element to the list of enabled elements (it's in the list several times if there are several listeners)
+        showpartEnabledElements.push(elt);
+    }
+
+    /**
+     * Removes partial show detection from an element.
+     * @param {EventTarget} elt
+     */
+    function disableElementShowpartEvent(elt) {
+        var pos = showpartEnabledElements.indexOf(elt);
+        //If element is not in the list, means a call to remove before adding a handler first
+        if (pos == -1) return;
+
+        //Remove the element from the list (it can be more than once)
+        showpartEnabledElements.splice(pos, 1);
+
+        //If the element is not in the list (it is once per event listener added)
+        if (showpartEnabledElements.indexOf(elt) == -1)
+        {
+            //Remove the window events
+            disableDetectionEventsListener(elt.onShowpartInternalListener);
+            delete elt.onShowpartInternalListener;
+        }
+    }
+
+    //Hide partially
+    /**
+     * Adds hide partially event detection to an element. Raises when the element is hidden totally (not partially)
+     * @param {EventTarget} elt
+     */
+    function enableElementHidepartEvent(elt) {
+        //If element is not already enabled...
+        if (hidepartEnabledElements.indexOf(elt) == -1) {
+            elt.onHidepartInternalListener = inViewportTotally(elt, raiseHidePartEvent); //Start detecting partial hide changes
+        }
+        //Add element to the list of enabled elements (it's in the list several times if there are several listeners)
+        hidepartEnabledElements.push(elt);
+    }
+
+    /**
+     * Removes hide detection from an element.
+     * @param {EventTarget} elt
+     */
+    function disableElementHidepartEvent(elt) {
+        var pos = hidepartEnabledElements.indexOf(elt);
+        //If element is not in the list, means a call to remove before adding a handler first
+        if (pos == -1) return;
+
+        //Remove the element from the list (it can be more than once)
+        hidepartEnabledElements.splice(pos, 1);
+
+        //If the element is not in the list (it is once per event listener added)
+        if (hidepartEnabledElements.indexOf(elt) == -1)
+        {
+            //Remove the window events
+            disableDetectionEventsListener(elt.onHidepartInternalListener);
+            delete elt.onHidepartInternalListener;
+        }
+    }
+
+    //Redefine the original global addEventListener and removeEventListener methods in order to detect the new custom events
 
     //Genereic event-raising method for visibility
     function raiseEvent(eventName, visibility, elt) {
@@ -105,7 +269,6 @@
             cancelable: false
         });
         elt.dispatchEvent(evt); //Notify event
-        return false;   //Don't cancel further events
     }
 
     //One method to handle/raise each event
@@ -145,28 +308,44 @@
         var lType = type.toLowerCase();
         switch (lType) {
             case 'show': //Raised when the element is totally shown
-                inViewportTotally(this, raiseShowEvent);
+                enableElementShowEvent(this);
                 break;
-                case 'hide':    //Raised when the element is totally hidden
-                inViewportPartially(this, raiseHideEvent);
+            case 'hide':    //Raised when the element is totally hidden
+                enableElementHideEvent(this);
                 break;
-                case 'showpart':    //Raised when the element is partially shown
-                inViewportPartially(this, raiseShowPartEvent);
+            case 'showpart':    //Raised when the element is partially shown
+                enableElementShowpartEvent(this);
                 break;
             case 'hidepart':    //Raised when the element is partially hidden
-                inViewportTotally(this, raiseHidePartEvent);
+                enableElementHidepartEvent(this);
                 break;
         }
     };
 
-    //TODO: subclassify removeEvent Listener
-    //TODO: support for IE
+    //Subclassify the original global removeEventListener to intercept and disable the new events
+    //Original removeEventListener
+    var oREL = EventTarget.prototype.removeEventListener;
+    EventTarget.prototype.removeEventListener = function(type, listener, options) {
+        //Call the original REL to remove the original listener
+        oREL.call(this, type, listener, options);
 
-    //Assign the global helper object
-    // window.visibilityHelper = {
-    //     isElementTotallyVisible: isElementTotallyVisible,
-    //     isElementPartiallyVisible: isElementPartiallyVisible,
-    //     inViewportPartially: inViewportPartially,
-    //     inViewportTotally: inViewportTotally
-    // };
+        //If the event is one of the supported ones by this library, then remove the current handler to stop raising the event
+        var lType = type.toLowerCase();
+        switch (lType) {
+            case 'show':
+                disableElementShowEvent(this);
+                break;
+            case 'hide':    //Raised when the element is totally hidden
+                disableElementHideEvent(this);
+                break;
+            case 'showpart':    //Raised when the element is partially shown
+                disableElementShowpartEvent(this);
+                break;
+            case 'hidepart':    //Raised when the element is partially hidden
+                disableElementHidepartEvent(this);
+                break;
+        }
+    }
+
+    //TODO: Add support for IE
 })();
