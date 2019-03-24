@@ -348,4 +348,6 @@
     }
 
     //TODO: Add support for IE
+//#endregion
+
 })();
