@@ -1,10 +1,10 @@
 {
-  "name": "iselementvisible",
-  "version": "2.0.0",
+  "name": "visibilityevents",
+  "version": "3.0.0",
   "description": "This library defines an object with two functions to detect visibility (total or partial) of an element in the viewport, and two functions that simulate two nonexistent events to detect when any element enters or leaves the visible area of the page.",
-  "main": "isElementVisible.js",
+  "main": "visibilityEvents.js",
   "scripts": {
-    "minimize": "uglifyjs isElementVisible.js --compress --mangle --comments --source-map filename=isElementVisible.min.js.map -o isElementVisible.min.js "
+    "minimize": "uglifyjs visibilityEvents.js --compress --mangle --comments --source-map filename=visibilityEvents.min.js.map -o visibilityEvents.min.js "
   },
   "repository": {
     "type": "git",

@@ -1,4 +1,4 @@
-# isElementVisible.js
+# VisibilityEvents.js
 
 Something that can be very useful in a page or web application is **the ability to detect when a particular item appears or disappears from the screen** due to the actions of the user. It's similar to the "waypoints" feature some libraries include, but in a generic and simpler way.
 
@@ -8,31 +8,43 @@ To get something like this we could use **an `inViewport` event**, or similar, t
 
 The problem is that **there is no such event in HTML / JavaScript**.
 
-To fix this problem I have created this simple library `isElementVisible.js`, written in pure ECMAScript 5 and working in even older browsers.
+To fix this problem I have created this library `visibilityEvents.js`, written in pure ECMAScript 5 and **working in all browsers except Internet Explorer**. The library is ony 903 bytes minimized nad gzipped.
 
-The library exposes **a `visibilityHelper` global object** with 4 functions:
+This library defines **4 new events** for any DOM element:
 
-- **`isElementTotallyVisible(element)`**: Indicates whether or not an element is within the visible area of ​​the page.
-- **`isElementPartiallyVisible(element)`**: Indicates whether or not an element is within the visible area of ​​the page.
-- **`inViewportPartially(element, handler, onlyFirstTime)`**: It is used to define an event handler that will be automatically raised when the element that is indicated is partially or totally outside the current page. The last boolean parameter indicates if the handler is going to be called every time this happens (`false`, default value), or only the first time the element enters the viewport (`true`). The handler receives the current visibility state (to detect if it's entering (`true`) or leaving (`false`) the viewport)
-- **`inViewportTotally(element, handler, onlyFirstTime)`**: It is used to define an event handler that will be automatically raised when the element that is indicated is completely in or out of the current page. The last boolean parameter indicates if the handler is going to be called every time this happens (`false`, default value), or only the first time the element enters or exists the viewport (`true`). The handler receives the current visibility state (to detect if it's entering (`true`) or leaving (`false`) the viewport)
+- **`show`**: it's raised when an element is **completely inside the viewport** in the page. If the element is initially visible it won't raise the event. It's only raised if the element is not totally visible in the page and gets into the viewport completely (by means of scrolling or resizing the page).
+- **`hide`**: gets notified when an element is **completely outside the viewport** of the page.
+- **`showpart`**: raised when the element was hidden and any part of it is partially in the viewport. As soon as the element box enters the viewport this event is raised.
+- **`hidepart`**: when the element was fully visible and any part of it gets hidden.
 
-You can use the return value of the handler to cancel further enter/exit events detection. If you return `true` the event will be cancelled and no further detection will be done. If you return `false` (or don't return anything at all) the events will keep raising.
+The events adds a `visible` property to the `details` object of the `event` so that you can reuse the same handler for several of them.
 
-To use this library just put a reference to the script in the header of the page and then define the event in a similar way to this:
+To use this library just put a reference to the script in the header of the page and then define events in the usual way:
 
+```javascript
+var elt = document.getElementById("myElement");
+
+elt.addEventListener('show', function() {
+    console.log("Element %s, shown completely in the page. Visibility state: %s", ev.target.id, ev.detail.visible);
+});
 ```
-var myDiv = document.getElementById("myElement");
-visibilityHelper.inViewportPartially(myDiv, 
-        function(visible, element){
-                console.log("%s element is visible?: %s", element.id, visible);
-        });
-```
 
-Which will cause the event handler to be called whenever the element partially enters or leaves the visible area of ​​the page, notifying the current visibility state and the element (in case we use the same handler for several elements).
+In this case the `show` event is raised if the element was totally or partially outside the viewport and, by means of scrolling or resizing, the element gets totally inside the viewport.
 
->**Note**: The events definition should be done at the end of the page or in the load event (or [`$.ready()`](https://api.jquery.com/ready/) in jQuery), where the elements that we are going to monitor are fully defined and we can locate them.
+It's important to know that **those events only raise in the case the visibility state changes**. For example, if the element is already visible when the page loads, the `show` event won't be raised. It only will be raised if the element is not visible and then is visible again. The same thing happens to all the new events: they detect **changes** in the corresponding visibility state.
 
-In the repository a small example is also included (`test.html`) with two boxes stuck in the middle of a lot of text (to be able to scroll and test them). This example uses both events (total and partial visibility) to display **in the browser console** when the event of entry and exit of the visible area happens, and thus to be able to test it in practice. Add a `true` value to the `inViewportTotally` or `inViewportPartially` methods in the test to test that the handler is being called only the first time.
+## Testing sample
+
+In the repository a small example is also included (`test.html`) with two boxes stuck in the middle of a lot of text (to be able to scroll and test them). This example uses the four events to display **in the browser console** ant visibility changes, and thus to be able to test it in practice.
+
+The first box uses two `show` events to notify in the console when it's completely visible in the viewport, and one `hidepart` event to notify when it starts to get hidden. If you click on it, one of the handlers will be toggled (for testing `removeEventListener`).
+
+The second box will notify when it starts to enter the visible area and when it is totally outside it.
+
+## A word of warning
+
+It's important to notice that the visibility events will only work if the visibility state changes because of **scrolling**, **resizing** or the page finishes **loading** making the previous state of the element change.
+
+I know there are other events that can lead to a change in the visibility of an element, for example dynamically modifying the DOM structure through code, changing the `display` property of the element or other elements, or if the user applies a zoom to the page. For the sake of simplicity and to keep the original objective of this library, none of those events are taken into consideration (in fact there's no effective way to detect the last one, zooming, anyway). The idea here is to detect changes in visibility on a normal use of a webpage. However if you need to add any of those events you can modify `enableDetectionEventsListener` and `disableDetectionEventsListener` in the source code.
 
 I hope you find it useful!

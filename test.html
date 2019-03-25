@@ -22,7 +22,7 @@
             background-color: blue;
         }
     </style>
-    <script src="isElementVisible.js"></script>
+    <script src="visibilityEvents.js"></script>
 </head>
 <body>
     <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore nam iusto quisquam, reiciendis ad, nulla quibusdam maiores asperiores explicabo consequatur voluptates ullam earum! Consequatur error quibusdam eius aliquam illo quos rerum molestiae. Doloremque, temporibus alias explicabo distinctio in ad aut rerum! Nihil ad, hic quia assumenda iure doloribus placeat distinctio nemo nostrum pariatur qui porro, reprehenderit dicta dolor modi accusantium, cumque repellat nulla optio provident maxime veritatis temporibus ratione. Officiis quidem enim, quae fugit? Placeat, sunt perspiciatis natus, accusamus assumenda asperiores deserunt. Quisquam blanditiis, nobis voluptatibus corrupti quae? Iusto mollitia quam suscipit molestias quisquam veritatis a doloribus illo fugiat, totam sit iste laboriosam excepturi eos fuga, voluptates omnis nostrum dolorem aspernatur aut illum vitae. Qui voluptates nesciunt, deleniti voluptas doloribus iste debitis. Pariatur eligendi vero laborum accusamus maxime delectus. Commodi magnam, numquam consequuntur quis reiciendis, itaque eveniet aperiam delectus aspernatur a ratione reprehenderit ipsa, culpa, libero hic consectetur voluptatum nihil officiis animi aut nisi totam debitis veniam quia. Repellat ex tempore odit, quisquam perspiciatis, a quis ut, est velit atque temporibus inventore libero! Quia dolore deleniti tempora nulla, explicabo a quas in aspernatur, voluptatem excepturi itaque nam adipisci eum corporis. Architecto pariatur, earum quas iste qui natus animi dicta, beatae temporibus quos a quaerat rem perferendis! Id ducimus culpa deleniti, repellat ipsam molestias libero quaerat quae! Corporis doloremque perferendis temporibus eius voluptas sunt repellat maxime in. Non blanditiis, debitis ipsa ducimus, sint hic. Alias repellendus, asperiores amet inventore cupiditate tempore voluptates ad recusandae sunt deleniti animi. Non numquam similique doloremque expedita, debitis aperiam vero perspiciatis illum. Aliquam a id nostrum impedit ullam atque, quidem error, aperiam illo, laboriosam, aspernatur soluta vel nihil libero quasi optio accusantium nulla amet dolorum cum veniam ipsam? Quod officia at, quibusdam perferendis! Dolores inventore similique deserunt repellat molestiae ab, laboriosam, fugit velit maxime minus nisi placeat praesentium laudantium libero fuga quisquam blanditiis nesciunt. Aperiam ratione alias nulla corporis blanditiis quam, accusamus, accusantium ab eaque harum cupiditate iure reprehenderit, culpa a facilis. Ullam ipsam facilis eum tenetur, debitis autem sed, voluptatibus. Reiciendis laudantium sit ipsam, quod rem sed nobis iusto facilis autem enim, vitae tenetur expedita commodi voluptatibus praesentium, sint voluptatem soluta aperiam voluptas nihil porro quidem. Qui, atque eius beatae, repellat doloremque voluptatum, similique quidem dolorum nihil esse quae magni enim! Temporibus labore perferendis accusantium id, mollitia distinctio neque, aliquid dolores aut! Distinctio pariatur, cum veniam unde vitae velit sunt obcaecati reiciendis excepturi, alias inventore omnis ducimus nemo est quos recusandae asperiores veritatis consectetur nihil. Odio modi facere quia nihil mollitia cumque sit amet qui facilis officiis quidem assumenda illum repellendus quasi, alias inventore labore impedit. Ducimus harum aut tempora similique unde, dolore, dicta incidunt voluptates voluptas. Aspernatur aut sint a tempora? Molestiae illum est et quis modi itaque perspiciatis suscipit necessitatibus reiciendis, dicta adipisci libero fugit porro repudiandae perferendis dolorem tempore magnam, nostrum odit molestias veritatis! Perferendis soluta, molestiae aut adipisci cupiditate voluptas, consequatur neque quidem. Magni eveniet saepe tempora cumque sit iusto, voluptas odit illum, laboriosam quaerat doloribus voluptatum inventore, tempore deserunt ipsum!</div>
@@ -37,15 +37,6 @@
 <script>
     var myDiv = document.getElementById("myBox");
     var myOtherDiv = document.getElementById("myOtherBox");
-
-    // function logVisibility(visible, element){
-    //     console.log("%s element is visible?: %s", element.id, visible);
-    //     //Uncomment the next line to cancel the detection events if the element is currently visible (and it's visilble therefore for the first time)
-    //     //return visible;
-    // }
-
-    // visibilityHelper.inViewportPartially(myDiv, logVisibility);
-    // visibilityHelper.inViewportTotally(myOtherDiv, logVisibility);
 
     function logVisibilityInEvent(ev){
         console.log("Event: %s for %s. Visibility state: %s", ev.type, ev.target.id, ev.detail.visible);

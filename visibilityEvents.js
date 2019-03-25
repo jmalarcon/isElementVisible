@@ -346,8 +346,6 @@
                 break;
         }
     }
-
-    //TODO: Add support for IE
 //#endregion
 
 })();
