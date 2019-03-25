@@ -19,7 +19,15 @@ This library defines **4 new events** for any DOM element:
 
 The events adds a `visible` property to the `details` object of the `event` so that you can reuse the same handler for several of them.
 
+>You can install this package through [npm](https://www.npmjs.com/package/visibilityevents) in order to keep dependencies under control in your app:
+>
+>`npm i visibilityevents`
+
 To use this library just put a reference to the script in the header of the page and then define events in the usual way:
+
+```html
+<script src="visibilityEvents.min.js"></script>
+```
 
 ```javascript
 var elt = document.getElementById("myElement");
