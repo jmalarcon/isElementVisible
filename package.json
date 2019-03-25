@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jmalarcon/isElementVisible.git"
+    "url": "git+https://github.com/jmalarcon/visibilityEvents.js.git"
   },
   "keywords": [
     "js",
@@ -18,9 +18,9 @@
   "author": "José M. Alarcón",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jmalarcon/isElementVisible/issues"
+    "url": "https://github.com/jmalarcon/visibilityEvents.js/issues"
   },
-  "homepage": "https://github.com/jmalarcon/isElementVisible#readme",
+  "homepage": "https://github.com/jmalarcon/visibilityEvents.js#readme",
   "devDependencies": {
     "uglify-js": "^3.5.2"
   }
